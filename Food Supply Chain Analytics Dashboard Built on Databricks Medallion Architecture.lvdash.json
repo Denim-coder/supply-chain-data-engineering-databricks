@@ -1,0 +1,576 @@
+{
+  "datasets": [
+    {
+      "name": "0fafe6b9",
+      "displayName": "vw_revenue_by_city",
+      "queryLines": [
+        "SELECT * FROM scf_gold.analytics.vw_revenue_by_city"
+      ]
+    },
+    {
+      "name": "27624588",
+      "displayName": "vw_revenue_by_product",
+      "queryLines": [
+        "SELECT * FROM scf_gold.analytics.vw_revenue_by_product"
+      ]
+    },
+    {
+      "name": "8507798d",
+      "displayName": "vw_shipments",
+      "queryLines": [
+        "SELECT shipment_date, quantity_shipped, total_cost, origin_city, shipping_mode FROM scf_silver.fact.shipments"
+      ],
+      "catalog": "scf_silver",
+      "schema": "fact"
+    }
+  ],
+  "pages": [
+    {
+      "name": "5b94d342",
+      "displayName": "Food Supply Chain Analytics Dashboard Built on Databricks Medallion Architecture",
+      "layout": [
+        {
+          "widget": {
+            "name": "revenue-by-product",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "27624588",
+                  "fields": [
+                    {
+                      "name": "product_name",
+                      "expression": "`product_name`"
+                    },
+                    {
+                      "name": "sum(total_revenue)",
+                      "expression": "SUM(`total_revenue`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Revenue by Product"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "product_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_revenue)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "executive-level-dashboard-design-10-10-dashboard-5-killer-insig",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0fafe6b9",
+                  "fields": [
+                    {
+                      "name": "sum(total_revenue)",
+                      "expression": "SUM(`total_revenue`)"
+                    },
+                    {
+                      "name": "origin_city",
+                      "expression": "`origin_city`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Revenue Distribution by City"
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(total_revenue)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "origin_city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "extra": [
+                  {
+                    "fieldName": "sum(total_revenue)"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 1,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "d2d5224f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8507798d",
+                  "fields": [
+                    {
+                      "name": "sum(total_cost)",
+                      "expression": "SUM(`total_cost`)"
+                    },
+                    {
+                      "name": "origin_city",
+                      "expression": "`origin_city`"
+                    },
+                    {
+                      "name": "shipping_mode",
+                      "expression": "`shipping_mode`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Shipment Costs by City and Mode",
+                "showTitle": true
+              },
+              "widgetType": "heatmap",
+              "encodings": {
+                "x": {
+                  "fieldName": "origin_city",
+                  "displayName": "origin_city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "shipping_mode",
+                  "displayName": "shipping_mode",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "sum(total_cost)",
+                  "legend": {
+                    "position": "right"
+                  },
+                  "displayName": "SUM(total_cost)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "monthly-shipment-trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8507798d",
+                  "fields": [
+                    {
+                      "name": "shipping_mode",
+                      "expression": "`shipping_mode`"
+                    },
+                    {
+                      "name": "monthly(shipment_date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `shipment_date`)"
+                    },
+                    {
+                      "name": "sum(quantity_shipped)",
+                      "expression": "SUM(`quantity_shipped`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Monthly Shipment Trend\n"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(shipment_date)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(quantity_shipped)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "shipping_mode",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 13,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "91a7ca04",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8507798d",
+                  "fields": [
+                    {
+                      "name": "shipping_mode",
+                      "expression": "`shipping_mode`"
+                    },
+                    {
+                      "name": "origin_city",
+                      "expression": "`origin_city`"
+                    },
+                    {
+                      "name": "sum(total_cost)",
+                      "expression": "SUM(`total_cost`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Shipment Cost by City",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "origin_city",
+                  "displayName": "origin_city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_cost)",
+                  "displayName": "sum(total_cost)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "shipping_mode",
+                  "displayName": "shipping_mode",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 19,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "417904e8",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8507798d",
+                  "fields": [
+                    {
+                      "name": "origin_city",
+                      "expression": "`origin_city`"
+                    },
+                    {
+                      "name": "sum(total_cost)",
+                      "expression": "SUM(`total_cost`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top Cities by Shipment Revenue",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "origin_city",
+                  "displayName": "origin_city",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_cost)",
+                  "displayName": "sum(total_cost)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "origin_city",
+                  "displayName": "origin_city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 19,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "237e8725",
+            "queries": [
+              {
+                "name": "dashboards/01f113aeb7911e83a29e13a9ab863ed2/datasets/01f113af1f3519bc9bc412eab54868d3_origin_city",
+                "query": {
+                  "datasetName": "8507798d",
+                  "fields": [
+                    {
+                      "name": "origin_city",
+                      "expression": "`origin_city`"
+                    },
+                    {
+                      "name": "origin_city_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "origin_city",
+                    "queryName": "dashboards/01f113aeb7911e83a29e13a9ab863ed2/datasets/01f113af1f3519bc9bc412eab54868d3_origin_city"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "5aad5829",
+            "queries": [
+              {
+                "name": "dashboards/01f113aeb7911e83a29e13a9ab863ed2/datasets/01f113af1f3519bc9bc412eab54868d3_shipment_date",
+                "query": {
+                  "datasetName": "8507798d",
+                  "fields": [
+                    {
+                      "name": "shipment_date",
+                      "expression": "`shipment_date`"
+                    },
+                    {
+                      "name": "shipment_date_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "widgetType": "filter-date-range-picker",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "shipment_date",
+                    "queryName": "dashboards/01f113aeb7911e83a29e13a9ab863ed2/datasets/01f113af1f3519bc9bc412eab54868d3_shipment_date"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "384da754",
+            "queries": [
+              {
+                "name": "dashboards/01f113aeb7911e83a29e13a9ab863ed2/datasets/01f113af1f3519bc9bc412eab54868d3_shipping_mode",
+                "query": {
+                  "datasetName": "8507798d",
+                  "fields": [
+                    {
+                      "name": "shipping_mode",
+                      "expression": "`shipping_mode`"
+                    },
+                    {
+                      "name": "shipping_mode_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "shipping_mode",
+                    "queryName": "dashboards/01f113aeb7911e83a29e13a9ab863ed2/datasets/01f113af1f3519bc9bc412eab54868d3_shipping_mode"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "ebf75ab6",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "eda312fb",
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {},
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
